@@ -23,11 +23,11 @@
 
 // This needs to stay in sync with Weaver
 #ifndef AS_USE_VIDEO
-  #define AS_USE_VIDEO 0
+  #define AS_USE_VIDEO 1
 #endif
 
 #ifndef AS_USE_PHOTOS
-  #define AS_USE_PHOTOS 0
+  #define AS_USE_PHOTOS 1
 #endif
 
 #ifndef AS_USE_MAPKIT

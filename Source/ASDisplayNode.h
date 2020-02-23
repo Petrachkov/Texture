@@ -67,7 +67,7 @@ typedef ASLayoutSpec * _Nonnull(^ASLayoutSpecBlock)(__kindof ASDisplayNode *node
  */
 typedef void (^ASDisplayNodeNonFatalErrorBlock)(NSError *error);
 
-typedef NS_ENUM(NSInteger, ASCornerRoundingType) {
+typedef NS_ENUM(unsigned char, ASCornerRoundingType) {
   ASCornerRoundingTypeDefaultSlowCALayer,
   ASCornerRoundingTypePrecomposited,
   ASCornerRoundingTypeClipping
@@ -666,6 +666,14 @@ AS_EXTERN NSInteger const ASDefaultDrawingPriority;
  */
 @property           CGFloat cornerRadius;                     // default=0.0
 
+/** @abstract Which corners to mask when rounding corners.
+ *
+ * @note This option cannot be changed when using iOS < 11
+ * and using ASCornerRoundingTypeDefaultSlowCALayer. Use a different corner rounding type to implement not-all-corners
+ * rounding in prior versions of iOS.
+ */
+@property           CACornerMask maskedCorners;               // default=all corners.
+
 @property           BOOL clipsToBounds;                       // default==NO
 @property (getter=isHidden)  BOOL hidden;                     // default==NO
 @property (getter=isOpaque)  BOOL opaque;                     // default==YES
@@ -697,7 +705,13 @@ AS_EXTERN NSInteger const ASDefaultDrawingPriority;
 @property (nullable, copy) UIColor *backgroundColor;           // default=nil
 
 @property (null_resettable, copy) UIColor *tintColor;          // default=Blue
-- (void)tintColorDidChange;                                    // Notifies the node when the tintColor has changed.
+
+/**
+ * Notifies the node when the tintColor has changed.
+ *
+ * @note This method is guaranteed to be called if the tintColor is changed after the node loaded.
+ */
+- (void)tintColorDidChange;
 
 /**
  * @abstract A flag used to determine how a node lays out its content when its bounds change.
@@ -720,7 +734,7 @@ AS_EXTERN NSInteger const ASDefaultDrawingPriority;
 
 @property            BOOL allowsGroupOpacity;
 @property            BOOL allowsEdgeAntialiasing;
-@property            unsigned int edgeAntialiasingMask;     // default==all values from CAEdgeAntialiasingMask
+@property            CAEdgeAntialiasingMask edgeAntialiasingMask;     // default==all values from CAEdgeAntialiasingMask
 
 @property            BOOL needsDisplayOnBoundsChange;       // default==NO
 @property            BOOL autoresizesSubviews;              // default==YES (undefined for layer-backed nodes)
@@ -793,6 +807,7 @@ AS_EXTERN NSInteger const ASDefaultDrawingPriority;
 @property           BOOL accessibilityViewIsModal;
 @property           BOOL shouldGroupAccessibilityChildren;
 @property           UIAccessibilityNavigationStyle accessibilityNavigationStyle;
+@property (nullable, copy)   NSArray *accessibilityCustomActions API_AVAILABLE(ios(8.0),tvos(9.0));
 #if TARGET_OS_TV
 @property (nullable, copy) 	NSArray *accessibilityHeaderElements;
 #endif
